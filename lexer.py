@@ -1,7 +1,7 @@
 import sys
 
 class Tag:
-    "class tag to relate tag names with numbers for faster results"
+    "class tag to relate tag names with numbers for faster results with static variables representing each case"
     EOF = 65535
     PROGRAM = 256
     CONSTANT = 257
@@ -43,7 +43,7 @@ class Tag:
     ERROR = 293
 
 class Token:
-    "class token gets the number id and returns string representation"
+    "class token gets the number id and returns string representation of the value"
     def __init__(self, tag=0):
         self.tag = tag
 
@@ -122,7 +122,7 @@ class Token:
             return "TOKEN - VALUE = "+ str(self.tag)
 
 class Word(Token):
-    "data type word"
+    "For storing reserved words, returning its lexeme in string representation"
     def __init__(self, lexeme, tag):
         self.tag = tag
         self.lexeme = lexeme
@@ -139,6 +139,7 @@ true = Word("true",  Tag.TRUE  )
 false = Word("false", Tag.FALSE )
 
 class Real(Token):
+    "Data type Real for storing real numbers, this includes numbers with floating point"
     def __init__(self, value):
         self.tag = Tag.REAL
         self.value = value
@@ -146,6 +147,7 @@ class Real(Token):
         return "REAL - VALUE = " + str(self.value)
 
 class Integer(Token):
+    "Data type Integer for storing integer values"
     def __init__(self, value):
         self.tag = Tag.INTEGER
         self.value = value
@@ -153,6 +155,7 @@ class Integer(Token):
         return "INTEGER - VALUE = " + str(self.value)
 
 class CharacterString(Token):
+    "Data type CharacterString for storing string values"
     def __init__(self, value):
         self.tag = Tag.CHARACTERSTRING
         self.value = value
@@ -160,6 +163,7 @@ class CharacterString(Token):
         return "STRING - VALUE = " + self.value
 
 class Lexer:
+    "Proccesing class that opens input and reads char by char"
     def __init__(self, filename):
         self.input = open(filename, "r")
         self.reading = True
