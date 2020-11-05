@@ -1,3 +1,4 @@
+import sys
 
 class Tag:
     "class tag to relate tag names with numbers for faster results with static variables representing each case"
@@ -135,7 +136,7 @@ class Token:
         elif self.tag == Tag.INTEGER:
             return "integer"
         elif self.tag == Tag.REAL:
-            return "number"
+            return "real"
         elif self.tag == Tag.BOOLEAN:
             return "boolean"
         elif self.tag == Tag.STRING:
@@ -297,8 +298,6 @@ class Lexer:
 
     def skipWhiteSpaces(self):
         while self.peek == " " or self.peek == "\t" or self.peek == "\n":
-            if self.peek == "\n":
-                self.lineNumber = self.lineNumber + 1
             self.readch()
 
     def readCharacterString(self):
@@ -332,34 +331,34 @@ class Lexer:
         elif self.peek == '<':
             self.readch()
             if self.peek == '=':
-                self.readch()
+                lex.readch()
                 return le
             elif self.peek == '>':
-                self.readch()
+                lex.readch()
                 return ne
             else:
                 return Token('<')
         elif self.peek == '>':
             self.readch()
             if self.peek == '=':
-                self.readch()
+                lex.readch()
                 return le
             elif self.peek == '>':
-                self.readch()
+                lex.readch()
                 return ne
             else:
                 return Token('<')
         elif self.peek == '=':
             self.readch()
             if self.peek == '=':
-                self.readch()
+                lex.readch()
                 return eq
             else:
                 return Token('=')
         elif self.peek == ':':
             self.readch()
             if self.peek == '=':
-                self.readch()
+                lex.readch()
                 return assing
             else:
                 return Token(':')
@@ -396,3 +395,17 @@ class Lexer:
             tok = Token(self.peek)
             self.readch()
             return tok
+
+
+
+if len(sys.argv) != 2:
+    print("usage: lexer.py inputfile")
+else:
+    lex = Lexer(sys.argv[1])
+    lex.start()
+    lex.readch()
+    token = lex.scan()
+    while lex.reading:
+        print(token.rvalue())
+        token = lex.scan()
+    lex.input.close()

@@ -3,44 +3,54 @@ import sys
 class Tag:
     "class tag to relate tag names with numbers for faster results with static variables representing each case"
     EOF = 65535
-    PROGRAM = 256
-    CONSTANT = 257
-    VAR = 258
-    BEGIN = 259
-    END = 260
-    INTEGER = 261
-    REAL = 262
-    BOOLEAN = 263
-    STRING = 264
-    ASSIGN = 265,
-    WRITELN = 266
-    READLN = 267
-    WHILE = 268
-    DO = 269
-    REPEAT = 270
-    UNTIL = 271
-    FOR	= 272
-    TO = 273
-    DOWNTO = 274
-    IF = 275
-    THEN = 276
-    ELSE = 277
-    NOT	= 278
-    EQ = 279
-    NEQ = 280
-    GE = 281
-    LE = 282
-    FALSE = 283
-    TRUE = 284
-    DIV = 285
-    MOD = 286
-    AND = 287
-    OR = 288
-    MINUS = 289
-    ID = 290
-    CHARACTERSTRING = 291
-    COMMMENTS = 292
-    ERROR = 293
+    SEMICOLON = 256
+    DOT = 257
+    PROGRAM = 258
+    IDENTIFIER = 259
+    OPARENTHESIS = 260
+    CPARENTHESIS = 261
+    CONSTANT = 262
+    EQUALS = 263
+    VAR = 264
+    DOUBLEDOT = 265
+    BEGIN = 266
+    END = 267
+    INTEGER = 268
+    REAL = 269
+    BOOLEAN = 270
+    STRING = 271
+    COMA = 272
+    ASSIGN = 273
+    WRITELN = 274
+    NUMBER = 275
+    READLN = 276
+    WHILE = 277
+    DO = 278
+    REPEAT = 279
+    UNTIL = 280
+    FOR	= 281
+    TO = 282
+    DOWNTO = 283
+    IF = 284
+    THEN = 285
+    ELSE = 286
+    PLUS = 297
+    MINUS = 288
+    NOT	= 289
+    NEQ = 290
+    GE = 291
+    GEQ = 292
+    LE = 293
+    LEQ = 294
+    FALSE = 295
+    TRUE = 296
+    OR = 297
+    MULT = 298
+    DIV = 299
+    MOD = 300
+    AND = 301
+    COMMMENTS = 303
+    ERROR = 304
 
 class Token:
     "class token gets the number id and returns string representation of the value"
@@ -100,7 +110,7 @@ class Token:
             return "AND";
         elif self.tag == Tag.OR:
             return "OR"
-        elif self.tag == Tag.EQ:
+        elif self.tag == Tag.EQUALS:
             return "=="
         elif self.tag == Tag.NEQ:
             return "<>"
@@ -112,7 +122,7 @@ class Token:
             return "-"
         elif self.tag == Tag.ASSIGN:
             return ":="
-        elif self.tag == Tag.ID:
+        elif self.tag == Tag.IDENTIFIER:
             return "ID"
         elif self.tag == Tag.EOF:
             return "EOF"
@@ -120,6 +130,81 @@ class Token:
             return "TOKEN - VALUE = COMMMENTS"
         else:
             return "TOKEN - VALUE = "+ str(self.tag)
+    def rvalue(self):
+        if self.tag == Tag.PROGRAM:
+            return "program"
+        elif self.tag == Tag.CONSTANT:
+            return "constant"
+        elif self.tag == Tag.VAR:
+            return "var"
+        elif self.tag == Tag.BEGIN:
+            return "begin"
+        elif self.tag == Tag.END:
+            return "end"
+        elif self.tag == Tag.INTEGER:
+            return "integer"
+        elif self.tag == Tag.REAL:
+            return "number"
+        elif self.tag == Tag.BOOLEAN:
+            return "boolean"
+        elif self.tag == Tag.STRING:
+            return "string"
+        elif self.tag == Tag.WRITELN:
+            return "writeln"
+        elif self.tag == Tag.READLN:
+            return "readln"
+        elif self.tag == Tag.WHILE:
+            return "while"
+        elif self.tag == Tag.DO:
+            return "do"
+        elif self.tag == Tag.REPEAT:
+            return "repeat"
+        elif self.tag == Tag.UNTIL:
+            return "until"
+        elif self.tag == Tag.FOR:
+            return "for"
+        elif self.tag == Tag.TO:
+            return "to"
+        elif self.tag == Tag.DOWNTO:
+            return "downto"
+        elif self.tag == Tag.IF:
+            return "if"
+        elif self.tag == Tag.THEN:
+            return "then"
+        elif self.tag == Tag.ELSE:
+            return "else"
+        elif self.tag == Tag.NOT:
+            return "not"
+        elif self.tag == Tag.DIV:
+            return "DIV"
+        elif self.tag == Tag.MOD:
+            return "mod"
+        elif self.tag == Tag.AND:
+            return "and";
+        elif self.tag == Tag.OR:
+            return "or"
+        elif self.tag == Tag.EQ:
+            return "="
+        elif self.tag == Tag.NEQ:
+            return "<>"
+        elif self.tag == Tag.LE:
+            return "<="
+        elif self.tag == Tag.GE:
+            return ">="
+        elif self.tag == Tag.MINUS:
+            return "-"
+        elif self.tag == Tag.ASSIGN:
+            return ":="
+        elif self.tag == Tag.ID:
+            return "identifier"
+        elif self.tag == Tag.EOF:
+            return "$"
+        elif self.tag == Tag.CHARACTERSTRING:
+            return "string"
+        elif self.tag == Tag.COMMMENTS:
+            return "TOKEN - VALUE = COMMMENTS"
+        else:
+            return str(self.tag)
 
 class Word(Token):
     "For storing reserved words, returning its lexeme in string representation"
@@ -129,10 +214,10 @@ class Word(Token):
     def __str__(self):
         return "WORD - LEXEME = " + self.lexeme
 
-eq = Word("==", Tag.EQ)
+eq = Word("==", Tag.EQUALS)
 ne = Word("<>", Tag.NEQ)
-le = Word("<=", Tag.LE  )
-ge = Word(">=", Tag.GE )
+le = Word("<=", Tag.LEQ  )
+ge = Word(">=", Tag.GEQ )
 minus = Word("minus", Tag.MINUS )
 assing = Word(":=", Tag.ASSIGN )
 true = Word("true",  Tag.TRUE  )
@@ -157,7 +242,7 @@ class Integer(Token):
 class CharacterString(Token):
     "Data type CharacterString for storing string values"
     def __init__(self, value):
-        self.tag = Tag.CHARACTERSTRING
+        self.tag = Tag.STRING
         self.value = value
     def __str__(self):
         return "STRING - VALUE = " + self.value
@@ -221,6 +306,8 @@ class Lexer:
 
     def skipWhiteSpaces(self):
         while self.peek == " " or self.peek == "\t" or self.peek == "\n":
+            if self.peek == "\n":
+                self.lineNumber = self.lineNumber + 1
             self.readch()
 
     def readCharacterString(self):
@@ -310,11 +397,13 @@ class Lexer:
             st = st.lower()
             if st in self.words:
                 return self.words[st]#Word(st, Tag.ID)
-            w = Word(st, Tag.ID)
+            w = Word(st, Tag.IDENTIFIER)
             self.reserve(w)
             return w
 
         else:
+            if self.peek == '':
+                return Token(65535)
             tok = Token(self.peek)
             self.readch()
             return tok
@@ -331,4 +420,5 @@ else:
     while lex.reading:
         print("" + str(token))
         token = lex.scan()
+    print("" + str(token))
     lex.input.close()

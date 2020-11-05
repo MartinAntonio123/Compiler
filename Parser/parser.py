@@ -9,9 +9,10 @@ class Parser:
         self.pilaEstados = [0]
         self.inputstring = []
         self.tabla = {}
-        self.fillAction("table2.csv")
-        self.manualInputString()
-        #self.fillInputString()
+        self.fillAction("table1.csv")
+        self.mylines = []
+        #self.manualInputString()
+        self.fillInputString()
 
     def fillAction(self, table):
         arr = []
@@ -38,52 +39,63 @@ class Parser:
         for i in range(len(keys)):
             #print(i+1)
             #print(len(vals[i]))
+            if keys[i] == 'coma':
+                keys[i] = ','
             self.tabla[keys[i]] = vals[i]
         file.close()
 
     def manualInputString(self):
-        self.inputstring = ['id','+','id','+','(','$']
+        self.inputstring = ['id','+','id','+','id','$']
 
     def fillInputString(self):
         self.lexer.start()
         self.lexer.readch()
+        cadena =''
         token = self.lexer.scan()
-        self.inputstring.append(token)
         while self.lexer.reading:
-            print("" + str(token))
+            if token.rvalue() != "TOKEN - VALUE = COMMMENTS":
+                self.inputstring.append(token.rvalue())
+                cadena = cadena + token.rvalue() + ' '
+                self.mylines.append(self.lexer.lineNumber)
             token = self.lexer.scan()
-            self.inputstring.append(token)
+        #self.inputstring.append(token.rvalue())
+        self.inputstring.append('$')
         self.lexer.input.close()
+        #print(self.inputstring)
+        #print(cadena)
+
+    def throwError(self):
+        print("ERROR IN LINE "+str(self.mylines[-len(self.inputstring)]))
+        sys.exit()
 
     def analize(self):
         maxsteps = 0
-        while maxsteps < 50:
+        while maxsteps < 1000:
             maxsteps = maxsteps + 1
             state = self.pilaEstados[-1]
             entrada = self.inputstring[0]
             action = self.tabla[entrada][state]
-            print(self.pilaEstados)
-            print(self.inputstring)
-            print(self.pila)
-            print(action)
+            #print(self.pilaEstados)
+            #print(self.inputstring)
+            #print(self.pila)
+            #print(action)
             if action == '':
-                print("ERROR ")
-                sys.exit()
+                self.throwError()
             elif action == 'acc':
                 print("accepted")
                 sys.exit()
             elif action[0] == 's':
-                print("shift")
+                #print("shift")
                 action = action.replace('s', '')
                 action = int(action)
                 self.pilaEstados.append(action)
                 self.pila.append(entrada)
                 self.inputstring.pop(0)
             elif action[0] == 'r':
-                print("shift")
+                #print("reduce")
                 action = action.replace('r', '')
                 action = int(action)
-                file = open('gramar2.txt', 'r')
+                file = open('gramar.txt', 'r')
                 lines = file.readlines()
                 file.close()
                 count = 0
@@ -91,25 +103,20 @@ class Parser:
                 for line in lines:
                     if count == action:
                         reduce = line
-                        print(line)
+                        #print(line)
                     count = count + 1
                 reduce = reduce.strip()
                 reduce = reduce.split(' ')#no se
-                print(reduce)
+                if reduce[-1] == "''":
+                    reduce.pop()
                 while reduce[-1] != '->':
                     self.pilaEstados.pop()
                     if reduce.pop() != self.pila.pop():
-                        print("ERROR ")
-                        sys.exit()
+                        self.throwError()
                 reduce.pop()
                 self.pila.append(reduce.pop())
                 self.pilaEstados.append(int(self.tabla[self.pila[-1]][self.pilaEstados[-1]]))
-
-
-
-
-
-
+        print("exceed max steps")
 
 
 if len(sys.argv) != 2:
