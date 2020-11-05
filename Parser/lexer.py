@@ -256,6 +256,8 @@ class Lexer:
     def readch(self):
         self.peek = self.input.read(1)
         if self.peek:
+            if self.peek == "'":
+                self.peek = '"'
             #print("scanned "+str(self.peek))
             return self.peek
         self.reading = False
