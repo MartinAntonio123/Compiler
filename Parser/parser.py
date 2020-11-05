@@ -58,7 +58,8 @@ class Parser:
                 cadena = cadena + token.rvalue() + ' '
                 self.mylines.append(self.lexer.lineNumber)
             token = self.lexer.scan()
-        #self.inputstring.append(token.rvalue())
+        if token.rvalue() != '':
+            self.inputstring.append(token.rvalue())
         self.inputstring.append('$')
         self.lexer.input.close()
         #print(self.inputstring)
